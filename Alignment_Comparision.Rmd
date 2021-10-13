@@ -1,0 +1,219 @@
+
+---
+title: "Aligner_Stats"
+author: "Jill Hagey"
+date: "1/4/2021"
+output:
+  html_document:
+    theme: spacelab 
+    toc: true
+    toc_depth: 2
+    toc_float: true
+    df_print: paged
+    highlight: espresso
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_knit$set(root.dir = "C:/Users/qpk9/OneDrive - CDC/Cryto_GWAS/")
+```
+
+```{r include=FALSE, error=FALSE, warning=FALSE}
+#Loading libraries 
+library(ggplot2)
+library(cowplot)
+library(tidyr)
+library(dplyr)
+library(scales)
+library(ggrepel)
+#library(Sushi)
+#library(karyoploteR)
+#library(rtracklayer)
+library(tidyverse)
+library(data.table)
+#library(Gviz)
+#library(GenomicRanges)
+#library(GenVisR)
+#library(ggbio)
+```
+
+# Introduction
+
+The following parameters were used to evaluate the aligners:
+
+*  5 different aligners   
+    +  Bowtie - end to end (E2E)  
+    +  Bowtie - local (local)  
+    +  Minimap2  
+    +  bbmap  
+    +  Stampy - uses bwa a the beginning  
+    +  bwa  
+*  Simulated sequencing depth  
+    +  10X  
+    +  25X  
+*  Simulated different sequencing lengths with different sequencing technology  
+    +  HiSeq 150bp  
+    +  HiSeq 125bp  
+    +  MiSeq 250bp  
+  
+
+# Basic Stats
+
+Below is a table that contains the stats for the simulated data.
+
+```{r}
+df_10 <- read.csv("Z:/Alignment_Eval/Output_10X/Aligner_Comparision.csv", sep=",", header= TRUE)
+df_25 <- read.csv("Z:/Alignment_Eval/Output_25X/Aligner_Comparision.csv", sep=",", header= TRUE)
+df <- rbind(df_10, df_25)
+df
+```
+
+I am going to pull out the tables of E2E, minimap2 and bwa (who performed the best) of the different aligners individually for easier evaluation.
+
+```{r}
+df[df$Aligner %like% "minimap",]
+#df %>% filter(Aligner == "minimap")
+```
+
+```{r}
+df[df$Aligner %like% "E2E",]
+```
+
+```{r}
+df[df$Aligner %like% "^bwa$",]
+```
+
+```{r fig.height=5 , fig.width=10}
+ggplot(df, aes(y=Percent_Mapped, x=Read_Length, fill=Aligner)) + 
+  geom_bar(stat="identity", position = "dodge") +
+  scale_fill_brewer(palette="Dark2")+
+  theme_bw()+
+  facet_wrap(~Simulated_Depth) +
+  #scale_y_continuous(limits = c(0, 120))+
+   #geom_text(aes(label=Missasemblies), position=position_dodge(width=0.9), vjust=-0.25)+
+   theme(axis.text.x=element_text(angle = 45, vjust = 1, hjust=1,face = "bold",color="black"),
+        strip.text.y=element_text(angle=0,face = "bold", color="black", size=11), 
+        strip.text.x=element_text(angle=0,face = "bold",color="black",size=11), 
+        axis.text= element_text(face = "bold",color="black", size=11), 
+        axis.title=element_text(face = "bold"), panel.grid.major.x = element_blank(),
+        panel.grid.minor.y=element_blank(),aspect.ratio = 2/1.5, legend.text=element_text(face = "bold"), 
+        legend.title=element_text(face = "bold"), plot.title = element_text(hjust = 0.5, face = "bold"))
+
+```
+
+```{r fig.height=5 , fig.width=10}
+ggplot(df, aes(y=Breadth_of_Coverage, x=Read_Length, fill=Aligner)) + 
+  geom_bar(stat="identity", position = "dodge") +
+  scale_fill_brewer(palette="Dark2")+
+  theme_bw()+
+  facet_wrap(~Simulated_Depth) +
+  #scale_y_continuous(limits = c(0, 120))+
+   #geom_text(aes(label=Missasemblies), position=position_dodge(width=0.9), vjust=-0.25)+
+   theme(axis.text.x=element_text(angle = 45, vjust = 1, hjust=1,face = "bold",color="black"),
+        strip.text.y=element_text(angle=0,face = "bold", color="black", size=11), 
+        strip.text.x=element_text(angle=0,face = "bold",color="black",size=11), 
+        axis.text= element_text(face = "bold",color="black", size=11), 
+        axis.title=element_text(face = "bold"), panel.grid.major.x = element_blank(),
+        panel.grid.minor.y=element_blank(),aspect.ratio = 2/1.5, legend.text=element_text(face = "bold"), 
+        legend.title=element_text(face = "bold"), plot.title = element_text(hjust = 0.5, face = "bold"))
+
+```
+
+```{r fig.height=5 , fig.width=10}
+ggplot(df, aes(y=Mean_Read_Depth, x=Read_Length, fill=Aligner)) + 
+  geom_bar(stat="identity", position = "dodge") +
+  scale_fill_brewer(palette="Dark2")+
+  theme_bw()+
+  facet_wrap(~Simulated_Depth) +
+  #scale_y_continuous(limits = c(0, 120))+
+   #geom_text(aes(label=Missasemblies), position=position_dodge(width=0.9), vjust=-0.25)+
+   theme(axis.text.x=element_text(angle = 45, vjust = 1, hjust=1,face = "bold",color="black"),
+        strip.text.y=element_text(angle=0,face = "bold", color="black", size=11), 
+        strip.text.x=element_text(angle=0,face = "bold",color="black",size=11), 
+        axis.text= element_text(face = "bold",color="black", size=11), 
+        axis.title=element_text(face = "bold"), panel.grid.major.x = element_blank(),
+        panel.grid.minor.y=element_blank(),aspect.ratio = 2/1.5, legend.text=element_text(face = "bold"), 
+        legend.title=element_text(face = "bold"), plot.title = element_text(hjust = 0.5, face = "bold"))
+
+```
+
+
+# Positions with Low Coverage
+
+First, we look at the 25X data. The following are the positions in the crypto genome that had low coverage (< 10 reads) using all aligners. 
+
+```{r}
+bed_25X <- read.table(file="Z:/Alignment_Eval/Output_25X/Low_Coverage.bed", sep="\t")
+colnames(bed_25X) <- c("chrom", "chromstart", "chromend") # change the column names
+bed_25X
+```
+
+These data show that of the 9,122,263 positions there are 1,399 positions with < 10 reads with all alignment tools. Thus, 0.02% of positions have less than 10 reads with all aligners. These are all at the beginning and end of the genomes and is to be expected.
+
+*  minimap2 --> there were **1,430** positions with < 10 reads.
+*  E2E --> there are **1,501** positions with < 10 reads.
+*  local --> there are **1,502** positions with < 10 reads.
+*  bwa --> there are **1,503** positions with < 10 reads.
+*  bwa2Stampy --> there are **1,503** positions with < 10 reads.
+*  bbmap --> there are **3,743** positions with < 10 reads.
+
+
+NExt, we look at the 10X data. The following are the positions in the crypto genome that had low coverage (< 10 reads) using all aligners. 
+
+```{r}
+bed_10X <- read.table(file="Z:/Alignment_Eval/Output_10X/Low_Coverage.bed", sep="\t")
+colnames(bed_10X) <- c("chrom", "chromstart", "chromend") # change the column names
+bed_10X
+```
+
+These data show that of the 9,122,263 positions there are 1,797,990 positions with < 3 reads with all alignment tools. Thus, 19.71% of positions have less than 10 reads with all aligners. There is a lot more places in throughout the genome that have low coverage. This suggests that to have be confident in the variant calls you would need to have a higher coverage than 10X. 
+
+*  minimap2 --> there were **1,850,904** positions with < 3 reads.
+*  E2E --> there are **1,803,626** positions with < 3 reads.
+*  local --> there are **1,815,454** positions with < 3 reads.
+*  bwa --> there are **1,848,964** positions with < 3 reads.
+*  bwa2Stampy --> there are **3,064,469** positions with < 3 reads.
+*  bbmap --> there are **1,808,293** positions with < 3 reads.
+
+# Graphing Out Positions of Low Coverage
+
+Below is a graph the the C. parvum genome. The blue lines denote genes on the + strand and yellow genes on the - strand. Black lines denote positions of low coverage >3 reads aligned in the 10X simulated sequencing data. These positions were found in all the aligners. 
+
+```{r, eval=FALSE, fig.width=18, fig.height=10}
+gff.file <- "https://cryptodb.org/common/downloads/Current_Release/CparvumIOWA-ATCC/gff/data/CryptoDB-50_CparvumIOWA-ATCC.gff"
+header.lines <- readLines(gff.file, n = 10)
+
+#The lines with the standard chromosomes start with "##sequence-region PvP01".
+#Select them.
+ll <- header.lines[grepl(header.lines, pattern = "##sequence-region CpIOWA-ATCC_Chr")]
+
+#split them by space, and create a data.frame
+gg <- data.frame(do.call(rbind, strsplit(ll, split = " ")))
+gg[,3] <- as.numeric(as.character(gg[,3])) # get column 3
+gg[,4] <- as.numeric(as.character(gg[,4]))  # get column 4
+
+#and create a GRanges with the information
+IOWA_ATCC.genome <- toGRanges(gg[,c(2,3,4)])
+
+#Get genes
+features <- import(gff.file)
+genes <- features[features$type=="gene"]
+
+pp <- getDefaultPlotParams(plot.type=2)
+pp$data1outmargin <- 100
+pp$data2outmargin <- 100
+pp$topmargin <- 450
+
+kp <- plotKaryotype(genome=IOWA_ATCC.genome, ideogram.plotter = NULL, plot.type=2, plot.params = pp)
+kpAddCytobandsAsLine(kp)
+kpAddMainTitle(kp, "C. parvum IOWA ATCC with Genes", cex=2)
+kpPlotRegions(kp, data=bed_25X, avoid.overlapping = FALSE, col="purple")
+kpPlotRegions(kp, data=bed_10X, avoid.overlapping = FALSE, col="black")
+kpPlotRegions(kp, data=genes[strand(genes)=="+"], avoid.overlapping = FALSE, col="deepskyblue")
+kpPlotRegions(kp, data=genes[strand(genes)=="-"], avoid.overlapping = FALSE, col="gold", data.panel=2)
+kpAddLabels(kp, "strand +", cex=0.8, col="#888888")
+kpAddLabels(kp, "strand -", data.panel=2, cex=0.8, col="#888888")
+```
+
+Based on these data, bowtie's end-to-end, minimap2 and bwa performed the best. Minimap was able to align more reads to the correct position and has the advantage of the fastest speed. However, minimap2 didn't do as well at lower depth coverage and bowtie'e E2E setting was better for this. Bowtie is a bit slower than minimap2 though. 
+
