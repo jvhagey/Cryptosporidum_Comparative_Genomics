@@ -2,13 +2,13 @@ for f in /scicomp/home-pure/qpk9/Alignment_Eval/Simulated_Seq_10X/*.log
 
 do
 	fname=$(basename $f _10X.log)
-	STAMPYDir=/scicomp/home-pure/qpk9/bin/stampy-1.0.32
-	ErrorOutDir=/scicomp/home-pure/qpk9/Alignment_Eval/Error_Out_Files
-	indir=/scicomp/home-pure/qpk9/Alignment_Eval/Simulated_Seq_10X
-	SAI=/scicomp/home-pure/qpk9/Alignment_Eval/SAI_10X
-	outdir=/scicomp/home-pure/qpk9/Alignment_Eval/Results_10X
-	Refdir=/scicomp/home-pure/qpk9/Reference_Genomes
-	Depth=/scicomp/home-pure/qpk9/Alignment_Eval/Depth_10X
+	STAMPYDir=/$PWD/bin/stampy-1.0.32
+	ErrorOutDir=/$PWD/Alignment_Eval/Error_Out_Files
+	indir=/$PWD/Alignment_Eval/Simulated_Seq_10X
+	SAI=/$PWD/Alignment_Eval/SAI_10X
+	outdir=/$PWD/Alignment_Eval/Results_10X
+	Refdir=/$PWD/Reference_Genomes
+	Depth=/$PWD/Alignment_Eval/Depth_10X
 	echo $fname
 	echo "#! /bin/bash -l" > $fname.Alignment10X.sh
 	echo "## -- begin embedded SGE options --" >> $fname.Alignment10X.sh
