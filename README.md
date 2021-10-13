@@ -1,0 +1,2 @@
+# Cryptosporidum_Comparative_Genomics
+Machine learning project for cryptosporidum comparative genomics
