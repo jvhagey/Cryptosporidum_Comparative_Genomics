@@ -1,12 +1,12 @@
-for f in /scicomp/home-pure/qpk9/Alignment_Eval/Results_10X/*.sam
+for f in /$PWD/Alignment_Eval/Results_10X/*.sam
 
 do
 	fname=$(basename $f .sam)
-	STAMPYDir=/scicomp/home-pure/qpk9/bin/stampy-1.0.32
-	ErrorOutDir=/scicomp/home-pure/qpk9/Alignment_Eval/Error_Out_Files
-	indir=/scicomp/home-pure/qpk9/Alignment_Eval/Results_10X
-	outdir=/scicomp/home-pure/qpk9/Alignment_Eval/Depth_10X
-	Refdir=/scicomp/home-pure/qpk9/Reference_Genomes
+	STAMPYDir=/$PWD/bin/stampy-1.0.32
+	ErrorOutDir=/$PWD/Alignment_Eval/Error_Out_Files
+	indir=/$PWD/Alignment_Eval/Results_10X
+	outdir=/$PWD/Alignment_Eval/Depth_10X
+	Refdir=/$PWD/Reference_Genomes
 	echo $fname
 	echo "#! /bin/bash -l" > $fname.depth.sh
 	echo "## -- begin embedded SGE options --" >> $fname.depth.sh
